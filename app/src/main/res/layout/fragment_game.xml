@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragment.GameFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#1f1f1f">
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:weightSum="2"
+            android:background="#08a"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:id="@+id/bombsTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#2f2f2f"
+                android:gravity="center"
+                android:textSize="@dimen/_25ssp"
+                android:textColor="#F00"
+                android:fontFamily="@font/dotgothic_regularr"
+                android:text="" />
+
+            <ImageButton
+                android:id="@+id/resetBtn"
+                android:layout_width="@dimen/_39sdp"
+                android:layout_height="@dimen/_39sdp"
+                android:layout_marginHorizontal="@dimen/_23sdp"
+                android:gravity="center"
+                android:scaleType="centerCrop"
+                android:background="@android:color/transparent"
+                app:srcCompat="@drawable/logo"/>
+
+            <TextView
+                android:id="@+id/timeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#2f2f2f"
+                android:gravity="center"
+                android:textSize="@dimen/_25ssp"
+                android:textColor="#F00"
+                android:fontFamily="@font/dotgothic_regularr"
+                android:text="" />
+
+        </LinearLayout>
+
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvNumbers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_4sdp"
+            android:layout_marginVertical="@dimen/_5sdp"
+            app:layout_constraintTop_toBottomOf="@id/linearLayout"
+            app:layout_constraintBottom_toTopOf="@id/flagButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <ImageButton
+            android:id="@+id/flagButton"
+            android:layout_width="@dimen/_54sdp"
+            android:layout_height="@dimen/_54sdp"
+            android:layout_marginBottom="@dimen/_6sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:gravity="center"
+            android:scaleType="centerCrop"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/flagged"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

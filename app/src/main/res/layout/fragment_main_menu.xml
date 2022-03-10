@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragment.MainMenuFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#1ab">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageButton">
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/playBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/pressstartp2p_regular"
+            android:textSize="@dimen/_33ssp"
+            android:paddingTop="@dimen/_21sdp"
+            android:paddingHorizontal="@dimen/_18sdp"
+            android:textAlignment="center"
+            android:text="Play" />
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/optionsBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Options"
+            android:fontFamily="@font/pressstartp2p_regular"
+            android:textSize="@dimen/_25ssp"
+            android:paddingTop="@dimen/_17sdp"
+            android:paddingHorizontal="@dimen/_13sdp"
+            app:layout_constraintEnd_toEndOf="@+id/playBtn"
+            app:layout_constraintStart_toStartOf="@+id/playBtn"
+            app:layout_constraintTop_toBottomOf="@+id/playBtn" />
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/exitBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Exit"
+            android:fontFamily="@font/pressstartp2p_regular"
+            android:textSize="@dimen/_25ssp"
+            android:paddingTop="@dimen/_17sdp"
+            android:paddingHorizontal="@dimen/_13sdp"
+            app:layout_constraintEnd_toEndOf="@+id/playBtn"
+            app:layout_constraintStart_toStartOf="@+id/playBtn"
+            app:layout_constraintTop_toBottomOf="@+id/optionsBtn" />
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+        </LinearLayout>
+
+
+
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="@dimen/_130sdp"
+            android:layout_height="@dimen/_130sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.15"
+            android:scaleType="centerCrop"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/logo" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>
