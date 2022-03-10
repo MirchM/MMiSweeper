@@ -33,34 +33,11 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link GameFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class GameFragment extends Fragment implements MyRecyclerViewAdapter.ItemClickListener {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
     public GameFragment() {
-        // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment GameFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static GameFragment newInstance(int numOfCollumns, int numOfRows, int numberOfBombs) {
         GameFragment fragment = new GameFragment();
         Bundle args = new Bundle();
@@ -82,7 +59,6 @@ public class GameFragment extends Fragment implements MyRecyclerViewAdapter.Item
     }
 
     MyRecyclerViewAdapter adapter;
-    public boolean isLandscape = false;
     public int numOfCollumns;
     private ArrayList<Cell> cells;
     private int numberOfBombs;
@@ -143,7 +119,6 @@ public class GameFragment extends Fragment implements MyRecyclerViewAdapter.Item
             loseDialog = savedInstanceState.getBoolean("loseDialog");
             winDialog = savedInstanceState.getBoolean("winDialog");
             bombsTV.setText(customFormat(savedInstanceState.getInt("bombs")));
-            //Toast.makeText(getContext(), String.valueOf(savedInstanceState.getInt("currentTime")), Toast.LENGTH_SHORT).show();
             if (!firstClick && !winDialog && !loseDialog) {
                 startTimer(savedInstanceState.getInt("currentTime"));
             }else{
@@ -153,46 +128,26 @@ public class GameFragment extends Fragment implements MyRecyclerViewAdapter.Item
             if(loseDialog) showLostDialog();
             this.cells.clear();
             this.cells.addAll((ArrayList<Cell>) savedInstanceState.getSerializable("cells"));
-
-            /*if (getResources().getConfiguration().orientation == ORIENTATION_LANDSCAPE) {
-                if(numOfRows > numOfCollumns){
-                    recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numOfCollumns));
-                }else {
-                    recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numOfRows));
-                }
-            } else {
-                if (numOfCollumns > numOfRows) {
-                    recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numOfCollumns));
-                } else {
-                    recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numOfRows));
-                }
-            }*/
         }else{
             bombsTV.setText(customFormat(numberOfBombs));
             saved = false;
             resetBoard();
         }
 
-
         // set up the RecyclerView
-
-
         RecyclerView recyclerView = v.findViewById(R.id.rvNumbers);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numOfCollumns));
         adapter = new MyRecyclerViewAdapter(getContext(), cells, numOfCollumns, numOfRows, getResources().getConfiguration().orientation == ORIENTATION_LANDSCAPE);
         adapter.setClickListener(this);
         recyclerView.setAdapter(adapter);
 
-
-
+        //return the view
         return v;
     }
 
     private void resetBoard() {
         if(saved) {
             saved = false;
-            Toast.makeText(getContext(), "saved", Toast.LENGTH_SHORT).show();
-            //adapter.notifyDataSetChanged();
         }
         winCondition = numOfCollumns * numOfRows - numberOfBombs;
         if (cells.size() > 0) {
@@ -321,7 +276,6 @@ public class GameFragment extends Fragment implements MyRecyclerViewAdapter.Item
             } else if (!cell.isFlagged()) {
                 switch (cell.getValue()) {
                     case Cell.BOMB:
-                        //cells.get(cells.indexOf(cell)).setValue(-2);
                         cells.get(cells.indexOf(cell)).setRevealed(true);
                         cell.setValue(-2);
                         showLostDialog();
@@ -479,7 +433,6 @@ public class GameFragment extends Fragment implements MyRecyclerViewAdapter.Item
         outState.putBoolean("firstClick", firstClick);
         outState.putBoolean("toggleFlag", toggleFlag);
         outState.putInt("winCondition", winCondition);
-        Log.println(Log.VERBOSE, "SAVESTATE", String.valueOf(winCondition));
         outState.putInt("bombs", Integer.parseInt(bombsTV.getText().toString()));
         outState.putInt("currentTime", Integer.parseInt(timeTV.getText().toString()));
         outState.putBoolean("winDialog", winDialog);
