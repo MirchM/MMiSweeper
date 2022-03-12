@@ -12,9 +12,10 @@
         <entry key="..\:/Users/Mirce/Desktop/MMiSweeper-final/app/src/main/res/layout/fragment_game_mode.xml" value="0.2264151024877837" />
         <entry key="..\:/Users/Mirce/Desktop/MMiSweeper-final/app/src/main/res/layout/fragment_main_menu.xml" value="0.16301887379120425" />
         <entry key="..\:/Users/Mirce/Desktop/MMiSweeper-final/app/src/main/res/layout/fragment_menu.xml" value="0.1" />
-        <entry key="..\:/Users/Mirce/Desktop/MMiSweeper-final/app/src/main/res/layout/fragment_options.xml" value="0.2264151024877837" />
+        <entry key="..\:/Users/Mirce/Desktop/MMiSweeper-final/app/src/main/res/layout/fragment_options.xml" value="0.14490566559218157" />
         <entry key="..\:/Users/Mirce/Desktop/MMiSweeper-final/app/src/main/res/layout/lose_dialog.xml" value="0.18113208199022698" />
         <entry key="..\:/Users/Mirce/Desktop/MMiSweeper-final/app/src/main/res/layout/recyclerview_item.xml" value="0.23055555555555557" />
+        <entry key="..\:/Users/Mirce/Desktop/MMiSweeper-final/app/src/main/res/layout/sound_dialog.xml" value="0.12552083333333333" />
         <entry key="..\:/Users/Mirce/Desktop/MMiSweeper-final/app/src/main/res/layout/win_dialog.xml" value="0.30520833333333336" />
       </map>
     </option>

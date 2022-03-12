@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
                 moveTaskToBack(true);
             } else {
                 Toast.makeText(this, "Press back again to Leave!", Toast.LENGTH_SHORT).show();
-
                 // resetting the counter in 2s
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {

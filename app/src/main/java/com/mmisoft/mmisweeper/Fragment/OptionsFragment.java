@@ -1,5 +1,10 @@
 package com.mmisoft.mmisweeper.Fragment;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -8,10 +13,14 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.mmisoft.mmisweeper.MainActivity;
 import com.mmisoft.mmisweeper.R;
+
+import java.util.Arrays;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -67,6 +76,7 @@ public class OptionsFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_options, container, false);
 
         ImageButton backBtn = v.findViewById(R.id.backOptionsButton);
+        Button themeBtn = v.findViewById(R.id.themeBtn);
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,6 +84,43 @@ public class OptionsFragment extends Fragment {
             }
         });
 
+        themeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences sharedPreferences = getContext().getSharedPreferences("Theme",MODE_PRIVATE);
+                SharedPreferences.Editor myEdit = sharedPreferences.edit();
+
+                String[] options = {"default", "minecraft iron", "minecraft gold", "minecraft diamond"};
+                int checkedItem = 0;
+                String selectedOption = sharedPreferences.getString("theme", "default");
+                for(int i = 0; i < options.length; i++){
+                    if(options[i].equals(selectedOption)){
+                        checkedItem = i;
+                    }
+                }
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Pick A Theme");
+                builder.setCancelable(false);
+                builder.setSingleChoiceItems(options, checkedItem, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        myEdit.putString("theme", options[i]);
+                    }
+                });
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                myEdit.apply();
+                                Toast.makeText(getContext(), sharedPreferences.getString("theme", "default") + " theme is selected", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                builder.setNegativeButton("Cancel", null);
+                builder.show();
+            }
+        });
         return v;
     }
 

@@ -2,6 +2,7 @@ package com.mmisoft.mmisweeper.Game;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.mmisoft.mmisweeper.R;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.ViewHolder> {
 
@@ -48,55 +50,202 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     // binds the data to the TextView in each cell
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
+        SharedPreferences sh = context.getSharedPreferences("Theme", Context.MODE_PRIVATE);
         if (cells.get(position).isRevealed()) {
-            switch (cells.get(position).getValue()) {
-                case -2:
-                    holder.myTextView.setBackgroundResource(R.drawable.bomb_exploded);
+
+            switch (sh.getString("theme", "default")){
+                case "default":
+                    switch (cells.get(position).getValue()) {
+                        case -2:
+                            holder.myTextView.setBackgroundResource(R.drawable.bomb_exploded);
+                            break;
+                        case Cell.BOMB:
+                            holder.myTextView.setBackgroundResource(R.drawable.bomb);
+                            break;
+                        case Cell.BLANK:
+                            holder.myTextView.setBackgroundResource(R.drawable.zero);
+                            break;
+                        case 1:
+                            holder.myTextView.setBackgroundResource(R.drawable.one);
+                            break;
+                        case 2:
+                            holder.myTextView.setBackgroundResource(R.drawable.two);
+                            break;
+                        case 3:
+                            holder.myTextView.setBackgroundResource(R.drawable.three);
+                            break;
+                        case 4:
+                            holder.myTextView.setBackgroundResource(R.drawable.four);
+                            break;
+                        case 5:
+                            holder.myTextView.setBackgroundResource(R.drawable.five);
+                            break;
+                        case 6:
+                            holder.myTextView.setBackgroundResource(R.drawable.six);
+                            break;
+                        case 7:
+                            holder.myTextView.setBackgroundResource(R.drawable.seven);
+                            break;
+                        case 8:
+                            holder.myTextView.setBackgroundResource(R.drawable.eight);
+                        default:
+                            holder.myTextView.setBackgroundResource(R.drawable.facing_down);
+                            break;
+                    }
                     break;
-                case Cell.BOMB:
-                    holder.myTextView.setBackgroundResource(R.drawable.bomb);
+                case "minecraft iron":
+                    switch (cells.get(position).getValue()) {
+                        case -2:
+                            holder.myTextView.setBackgroundResource(R.drawable.iron_minecraft_rbomb_exploed);
+                            break;
+                        case Cell.BOMB:
+                            holder.myTextView.setBackgroundResource(R.drawable.iron_minecraft_bomb);
+                            break;
+                        case Cell.BLANK:
+                            holder.myTextView.setBackgroundResource(R.drawable.iron_minecraft_revealed);
+                            break;
+                        case 1:
+                            holder.myTextView.setBackgroundResource(R.drawable.iron_minecraft_1);
+                            break;
+                        case 2:
+                            holder.myTextView.setBackgroundResource(R.drawable.iron_minecraft_2);
+                            break;
+                        case 3:
+                            holder.myTextView.setBackgroundResource(R.drawable.iron_minecraft_3);
+                            break;
+                        case 4:
+                            holder.myTextView.setBackgroundResource(R.drawable.iron_minecraft_4);
+                            break;
+                        case 5:
+                            holder.myTextView.setBackgroundResource(R.drawable.iron_minecraft_5);
+                            break;
+                        case 6:
+                            holder.myTextView.setBackgroundResource(R.drawable.iron_minecraft_6);
+                            break;
+                        case 7:
+                            holder.myTextView.setBackgroundResource(R.drawable.iron_minecraft_7);
+                            break;
+                        case 8:
+                            holder.myTextView.setBackgroundResource(R.drawable.iron_minecraft_8);
+                        default:
+                            holder.myTextView.setBackgroundResource(R.drawable.iron_minecraft);
+                            break;
+                    }
                     break;
-                case Cell.BLANK:
-                    holder.myTextView.setBackgroundResource(R.drawable.zero);
+                case "minecraft gold":
+                    switch (cells.get(position).getValue()) {
+                        case -2:
+                            holder.myTextView.setBackgroundResource(R.drawable.gold_minecraft_bomb_exploded);
+                            break;
+                        case Cell.BOMB:
+                            holder.myTextView.setBackgroundResource(R.drawable.gold_minecraft_bomb);
+                            break;
+                        case Cell.BLANK:
+                            holder.myTextView.setBackgroundResource(R.drawable.gold_minecraft_revealed);
+                            break;
+                        case 1:
+                            holder.myTextView.setBackgroundResource(R.drawable.gold_minecraft_1);
+                            break;
+                        case 2:
+                            holder.myTextView.setBackgroundResource(R.drawable.gold_minecraft_2);
+                            break;
+                        case 3:
+                            holder.myTextView.setBackgroundResource(R.drawable.gold_minecraft_3);
+                            break;
+                        case 4:
+                            holder.myTextView.setBackgroundResource(R.drawable.gold_minecraft_4);
+                            break;
+                        case 5:
+                            holder.myTextView.setBackgroundResource(R.drawable.gold_minecraft_5);
+                            break;
+                        case 6:
+                            holder.myTextView.setBackgroundResource(R.drawable.gold_minecraft_6);
+                            break;
+                        case 7:
+                            holder.myTextView.setBackgroundResource(R.drawable.gold_minecraft_7);
+                            break;
+                        case 8:
+                            holder.myTextView.setBackgroundResource(R.drawable.gold_minecraft_8);
+                        default:
+                            holder.myTextView.setBackgroundResource(R.drawable.gold_minecraft);
+                            break;
+                    }
                     break;
-                case 1:
-                    holder.myTextView.setBackgroundResource(R.drawable.one);
+                case "minecraft diamond":
+                    switch (cells.get(position).getValue()) {
+                        case -2:
+                            holder.myTextView.setBackgroundResource(R.drawable.diamond_minecraft_bomb_exploded);
+                            break;
+                        case Cell.BOMB:
+                            holder.myTextView.setBackgroundResource(R.drawable.diamond_minecraft_bomb);
+                            break;
+                        case Cell.BLANK:
+                            holder.myTextView.setBackgroundResource(R.drawable.diamond_minecraft_revealed);
+                            break;
+                        case 1:
+                            holder.myTextView.setBackgroundResource(R.drawable.diamond_minecraft_1);
+                            break;
+                        case 2:
+                            holder.myTextView.setBackgroundResource(R.drawable.diamond_minecraft_2);
+                            break;
+                        case 3:
+                            holder.myTextView.setBackgroundResource(R.drawable.diamond_minecraft_3);
+                            break;
+                        case 4:
+                            holder.myTextView.setBackgroundResource(R.drawable.diamond_minecraft_4);
+                            break;
+                        case 5:
+                            holder.myTextView.setBackgroundResource(R.drawable.diamond_minecraft_5);
+                            break;
+                        case 6:
+                            holder.myTextView.setBackgroundResource(R.drawable.diamond_minecraft_6);
+                            break;
+                        case 7:
+                            holder.myTextView.setBackgroundResource(R.drawable.diamond_minecraft_7);
+                            break;
+                        case 8:
+                            holder.myTextView.setBackgroundResource(R.drawable.diamond_minecraft_8);
+                        default:
+                            holder.myTextView.setBackgroundResource(R.drawable.diamond_minecraft);
+                            break;
+                    }
                     break;
-                case 2:
-                    holder.myTextView.setBackgroundResource(R.drawable.two);
-                    break;
-                case 3:
-                    holder.myTextView.setBackgroundResource(R.drawable.three);
-                    break;
-                case 4:
-                    holder.myTextView.setBackgroundResource(R.drawable.four);
-                    break;
-                case 5:
-                    holder.myTextView.setBackgroundResource(R.drawable.five);
-                    break;
-                case 6:
-                    holder.myTextView.setBackgroundResource(R.drawable.six);
-                    break;
-                case 7:
-                    holder.myTextView.setBackgroundResource(R.drawable.seven);
-                    break;
-                case 8:
-                    holder.myTextView.setBackgroundResource(R.drawable.eight);
             }
+
         }else {
             if(cells.get(position).isFlagged()){
-                holder.myTextView.setBackgroundResource(R.drawable.flagged);
+                switch (sh.getString("theme", "default")){
+                    case "default":
+                        holder.myTextView.setBackgroundResource(R.drawable.flagged);
+                        break;
+                    case "minecraft iron":
+                        holder.myTextView.setBackgroundResource(R.drawable.iron_minecraft_flagged);
+                        break;
+                    case "minecraft gold":
+                        holder.myTextView.setBackgroundResource(R.drawable.gold_minecraft_flag);
+                        break;
+                    case "minecraft diamond":
+                        holder.myTextView.setBackgroundResource(R.drawable.diamond_minecraft_flag);
+                        break;
+                }
             }else {
-                holder.myTextView.setBackgroundResource(R.drawable.facing_down);
+                switch (sh.getString("theme", "default")){
+                    case "default":
+                        holder.myTextView.setBackgroundResource(R.drawable.facing_down);
+                        break;
+                    case "minecraft iron":
+                        holder.myTextView.setBackgroundResource(R.drawable.iron_minecraft);
+                        break;
+                    case "minecraft gold":
+                        holder.myTextView.setBackgroundResource(R.drawable.gold_minecraft);
+                        break;
+                    case "minecraft diamond":
+                        holder.myTextView.setBackgroundResource(R.drawable.diamond_minecraft);
+                        break;
+                }
+
             }
         }
-//            } else {
-//                holder.myTextView.setBackgroundResource(R.drawable.facing_down);
-//            }
-
-//            holder.myTextView.setBackground(R.drawable);
-//            holder.myTextView.setText(String.valueOf(cells.get(position).getValue()));
     }
 
     // total number of cells

@@ -1,10 +1,15 @@
 package com.mmisoft.mmisweeper.Fragment;
 
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+import static android.os.ParcelFileDescriptor.MODE_APPEND;
 
 import android.app.Dialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
+import android.media.AudioAttributes;
+import android.media.SoundPool;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,7 +19,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.CountDownTimer;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,11 +26,9 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mmisoft.mmisweeper.Game.Cell;
 import com.mmisoft.mmisweeper.Game.MyRecyclerViewAdapter;
-import com.mmisoft.mmisweeper.MainActivity;
 import com.mmisoft.mmisweeper.R;
 
 import java.text.DecimalFormat;
@@ -64,15 +66,22 @@ public class GameFragment extends Fragment implements MyRecyclerViewAdapter.Item
     private int numberOfBombs;
     private int numOfRows;
     private int winCondition;
+    //Booleans
     private boolean gameOver = false;
     private boolean firstClick = true;
     private boolean toggleFlag = false;
     private CountDownTimer cTimer = null;
     private TextView timeTV, bombsTV;
     public static boolean saved;
+
+    //dialogBooleans for screen orientation changes
     private boolean loseDialog = false;
     private boolean winDialog = false;
 
+
+    //MediaPlayer for button sound
+    private SoundPool soundPool;
+    private int soundDefault, soundFlag, soundRemoveFlag, soundDeath;
 
 
     @Override
@@ -83,6 +92,33 @@ public class GameFragment extends Fragment implements MyRecyclerViewAdapter.Item
         View v = inflater.inflate(R.layout.fragment_game, container, false);
         bombsTV = v.findViewById(R.id.bombsTextView);
         timeTV = v.findViewById(R.id.timeTextView);
+
+
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .setUsage(AudioAttributes.USAGE_GAME)
+                .build();
+        soundPool = new SoundPool.Builder()
+                .setAudioAttributes(audioAttributes)
+                .build();
+        SharedPreferences sh = getContext().getSharedPreferences("Theme", Context.MODE_PRIVATE);
+        switch (sh.getString("theme", "default")){
+            case "minecraft wood":
+            case "minecraft iron":
+            case "minecraft gold":
+            case "minecraft diamond":
+                soundDefault = soundPool.load(getContext(), R.raw.minecraft_default_sound, 1);
+                soundFlag = soundPool.load(getContext(), R.raw.minecraft_flag_sound, 1);
+                soundRemoveFlag = soundPool.load(getContext(), R.raw.minecraft_flag_remove_sound, 1);
+                soundDeath = soundPool.load(getContext(), R.raw.minecraft_death_sound, 1);
+                break;
+            case "default":
+                soundDefault = soundPool.load(getContext(), R.raw.default_sound, 1);
+                soundFlag = soundPool.load(getContext(), R.raw.default_sound, 1);
+                soundRemoveFlag = soundPool.load(getContext(), R.raw.default_sound, 1);
+                soundDeath = soundPool.load(getContext(), R.raw.default_sound, 1);
+                break;
+        }
 
         ImageButton resetButton = v.findViewById(R.id.resetBtn);
 
@@ -166,12 +202,16 @@ public class GameFragment extends Fragment implements MyRecyclerViewAdapter.Item
 
     private void flagCell(int position) {
         if (!firstClick) {
-            cells.get(position).toggleFlagged();
-            adapter.notifyItemChanged(position);
-            if(cells.get(position).isFlagged()){
-                bombsTV.setText(customFormat(Integer.parseInt(bombsTV.getText().toString()) - 1));
-            }else{
-                bombsTV.setText(customFormat(Integer.parseInt(bombsTV.getText().toString()) + 1));
+            if(!cells.get(position).isRevealed()) {
+                cells.get(position).toggleFlagged();
+                adapter.notifyItemChanged(position);
+                if (cells.get(position).isFlagged()) {
+                    soundPool.play(soundRemoveFlag, 0.44f, 0.44f, 1, 0, 1f);
+                    bombsTV.setText(customFormat(Integer.parseInt(bombsTV.getText().toString()) - 1));
+                } else {
+                    soundPool.play(soundFlag, 0.44f, 0.44f, 1, 0, 1f);
+                    bombsTV.setText(customFormat(Integer.parseInt(bombsTV.getText().toString()) + 1));
+                }
             }
         }
     }
@@ -266,6 +306,7 @@ public class GameFragment extends Fragment implements MyRecyclerViewAdapter.Item
     public void onItemClick(int position) {
         Cell cell = cells.get(position);
         if (firstClick) {
+            soundPool.play(soundDefault, 0.44f, 0.44f, 1, 0, 1f);
             placeBombs(cell);
             firstClick = false;
             startTimer(0);
@@ -276,6 +317,7 @@ public class GameFragment extends Fragment implements MyRecyclerViewAdapter.Item
             } else if (!cell.isFlagged()) {
                 switch (cell.getValue()) {
                     case Cell.BOMB:
+                        soundPool.play(soundDeath, 0.44f, 0.44f, 1, 0, 1f);
                         cells.get(cells.indexOf(cell)).setRevealed(true);
                         cell.setValue(-2);
                         showLostDialog();
@@ -284,12 +326,13 @@ public class GameFragment extends Fragment implements MyRecyclerViewAdapter.Item
                         cancelTimer();
                         break;
                     case Cell.BLANK:
-
+                        soundPool.play(soundDefault, 0.44f, 0.44f, 1, 0, 1f);
                         if (!cell.isRevealed()) {
                             getEmptyNeighbourCells(cell);
                         }
                         break;
                     default:
+                        soundPool.play(soundDefault, 0.44f, 0.44f, 1, 0, 1f);
                         if (!cell.isRevealed()) {
                             winCondition--;
                         }
@@ -320,14 +363,8 @@ public class GameFragment extends Fragment implements MyRecyclerViewAdapter.Item
     void startTimer(int currentmills) {
         cTimer = new CountDownTimer(10000000, 1000) {
             public void onTick(long millisUntilFinished) {
-                //Toast.makeText(getContext(), String.valueOf(millisUntilFinished), Toast.LENGTH_SHORT).show();
                 millisUntilFinished -= (currentmills * 1000);
-                /*if(currentmills != 0){
-                    Toast.makeText(getContext(), String.valueOf(currentmills), Toast.LENGTH_SHORT).show();
-                    timeTV.setText(customFormat((10000000 - currentmills - millisUntilFinished) / 1000));
-                }else {*/
                     timeTV.setText(customFormat((10000000 - millisUntilFinished) / 1000));
-                //}
             }
             public void onFinish() {
 
