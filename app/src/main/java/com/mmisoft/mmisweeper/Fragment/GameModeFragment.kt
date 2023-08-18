@@ -1,103 +1,70 @@
-package com.mmisoft.mmisweeper.Fragment;
+package com.mmisoft.mmisweeper.Fragment
 
-import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageButton;
-
-import com.mmisoft.mmisweeper.MainActivity;
-import com.mmisoft.mmisweeper.R;
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageButton
+import androidx.fragment.app.Fragment
+import com.mmisoft.mmisweeper.Fragment.GameFragment.Companion.newInstance
+import com.mmisoft.mmisweeper.MainActivity
+import com.mmisoft.mmisweeper.R
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link GameModeFragment#newInstance} factory method to
+ * A simple [Fragment] subclass.
+ * Use the [GameModeFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-public class GameModeFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
+class GameModeFragment : Fragment() {
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public GameModeFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment GameModeFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static GameModeFragment newInstance(String param1, String param2) {
-        GameModeFragment fragment = new GameModeFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    private var mParam1: String? = null
+    private var mParam2: String? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (arguments != null) {
+            mParam1 = requireArguments().getString(ARG_PARAM1)
+            mParam2 = requireArguments().getString(ARG_PARAM2)
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_game_mode, container, false);
+        val v = inflater.inflate(R.layout.fragment_game_mode, container, false)
+        val backBtn = v.findViewById<ImageButton>(R.id.backOptionsButton)
+        backBtn.setOnClickListener { (activity as MainActivity?)!!.backBtn() }
+        val easyBtn = v.findViewById<Button>(R.id.easyBtn)
+        easyBtn.setOnClickListener { (activity as MainActivity?)!!.changeMainFragment(newInstance(7, 7, 7), "options") }
+        val mediumBtn = v.findViewById<Button>(R.id.mediumBtn)
+        mediumBtn.setOnClickListener { (activity as MainActivity?)!!.changeMainFragment(newInstance(10, 10, 10), "options") }
+        val hardBtn = v.findViewById<Button>(R.id.hardBtn)
+        hardBtn.setOnClickListener { (activity as MainActivity?)!!.changeMainFragment(newInstance(15, 15, 15), "options") }
+        return v
+    }
 
-        ImageButton backBtn = v.findViewById(R.id.backOptionsButton);
-        backBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((MainActivity)getActivity()).backBtn();
-            }
-        });
+    companion object {
+        // TODO: Rename parameter arguments, choose names that match
+        // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+        private const val ARG_PARAM1 = "param1"
+        private const val ARG_PARAM2 = "param2"
 
-        Button easyBtn = v.findViewById(R.id.easyBtn);
-        easyBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((MainActivity)getActivity()).changeMainFragment(GameFragment.newInstance(7, 7, 7), "options");
-            }
-        });
-
-        Button mediumBtn = v.findViewById(R.id.mediumBtn);
-        mediumBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((MainActivity)getActivity()).changeMainFragment(GameFragment.newInstance(10, 10, 10), "options");
-            }
-        });
-
-
-        Button hardBtn = v.findViewById(R.id.hardBtn);
-        hardBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((MainActivity)getActivity()).changeMainFragment(GameFragment.newInstance(15, 15, 15), "options");
-            }
-        });
-        return v;
+        /**
+         * Use this factory method to create a new instance of
+         * this fragment using the provided parameters.
+         *
+         * @param param1 Parameter 1.
+         * @param param2 Parameter 2.
+         * @return A new instance of fragment GameModeFragment.
+         */
+        // TODO: Rename and change types and number of parameters
+        fun newInstance(param1: String?, param2: String?): GameModeFragment {
+            val fragment = GameModeFragment()
+            val args = Bundle()
+            args.putString(ARG_PARAM1, param1)
+            args.putString(ARG_PARAM2, param2)
+            fragment.arguments = args
+            return fragment
+        }
     }
 }
