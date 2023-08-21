@@ -61,21 +61,23 @@ class GameFragment : Fragment(), ItemClickListener {
 
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         // Inflate the layout for this fragment
         val v = inflater.inflate(R.layout.fragment_game, container, false)
         bombsTV = v.findViewById(R.id.bombsTextView)
         timeTV = v.findViewById(R.id.timeTextView)
         val audioAttributes = AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .setUsage(AudioAttributes.USAGE_GAME)
-                .build()
+            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+            .setUsage(AudioAttributes.USAGE_GAME)
+            .build()
         soundPool = SoundPool.Builder()
-                .setAudioAttributes(audioAttributes)
-                .build()
+            .setAudioAttributes(audioAttributes)
+            .build()
         val sh = requireContext().getSharedPreferences("Theme", Context.MODE_PRIVATE)
-        soundPool?.let {soundPool ->
+        soundPool?.let { soundPool ->
             when (sh.getString("theme", "default")) {
                 "minecraft wood", "minecraft iron", "minecraft gold", "minecraft diamond" -> {
                     soundDefault = soundPool.load(context, R.raw.minecraft_default_sound, 1)
@@ -135,7 +137,15 @@ class GameFragment : Fragment(), ItemClickListener {
         // set up the RecyclerView
         val recyclerView = v.findViewById<RecyclerView>(R.id.rvNumbers)
         recyclerView.layoutManager = GridLayoutManager(context, numOfCollumns)
-        adapter = MyRecyclerViewAdapter(context, cells, numOfCollumns, numOfRows, resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+        adapter = cells?.let {
+            MyRecyclerViewAdapter(
+                requireContext(),
+                it,
+                numOfCollumns,
+                resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+            )
+        }
+
         adapter!!.setClickListener(this)
         recyclerView.adapter = adapter
 
