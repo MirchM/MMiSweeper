@@ -1,6 +1,6 @@
-package com.mmisoft.mmisweeper.Game;
+package com.mmisoft.mmisweeper.Game
 
-public interface OnCellClickListener {
-    void onCellClick(int position);
-    void onLongCellClick(int position);
+interface OnCellClickListener {
+    fun onCellClick(position: Int)
+    fun onLongCellClick(position: Int)
 }
