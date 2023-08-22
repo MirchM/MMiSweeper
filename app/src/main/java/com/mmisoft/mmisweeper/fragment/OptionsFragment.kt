@@ -1,4 +1,4 @@
-package com.mmisoft.mmisweeper.Fragment
+package com.mmisoft.mmisweeper.fragment
 
 import android.app.AlertDialog
 import android.content.Context

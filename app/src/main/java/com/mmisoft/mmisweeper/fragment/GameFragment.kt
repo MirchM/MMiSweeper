@@ -1,4 +1,4 @@
-package com.mmisoft.mmisweeper.Fragment
+package com.mmisoft.mmisweeper.fragment
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -18,14 +18,13 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.mmisoft.mmisweeper.Game.Cell
-import com.mmisoft.mmisweeper.Game.MyRecyclerViewAdapter
-import com.mmisoft.mmisweeper.Game.MyRecyclerViewAdapter.ItemClickListener
 import com.mmisoft.mmisweeper.R
+import com.mmisoft.mmisweeper.game.Cell
+import com.mmisoft.mmisweeper.game.MyRecyclerViewAdapter
 import java.text.DecimalFormat
 import java.util.Random
 
-class GameFragment : Fragment(), ItemClickListener {
+class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         numberOfBombs = requireArguments().getInt("bombs")
