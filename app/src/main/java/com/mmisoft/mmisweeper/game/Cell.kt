@@ -1,4 +1,4 @@
-package com.mmisoft.mmisweeper.Game
+package com.mmisoft.mmisweeper.game
 
 import java.io.Serializable
 

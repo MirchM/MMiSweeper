@@ -1,4 +1,4 @@
-package com.mmisoft.mmisweeper.Game
+package com.mmisoft.mmisweeper.game
 
 interface OnCellClickListener {
     fun onCellClick(position: Int)

@@ -1,4 +1,4 @@
-package com.mmisoft.mmisweeper.Game
+package com.mmisoft.mmisweeper.game
 
 import android.app.Activity
 import android.content.Context

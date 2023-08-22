@@ -136,14 +136,15 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
         // set up the RecyclerView
         val recyclerView = v.findViewById<RecyclerView>(R.id.rvNumbers)
         recyclerView.layoutManager = GridLayoutManager(context, numOfCollumns)
-        adapter = cells?.let { cells ->
+        adapter = cells?.let {
             MyRecyclerViewAdapter(
                 requireContext(),
-                cells,
+                it,
                 numOfCollumns,
                 resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
             )
         }
+
         adapter!!.setClickListener(this)
         recyclerView.adapter = adapter
 
@@ -177,12 +178,10 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
                 adapter!!.notifyItemChanged(position)
                 if (cells!![position].isFlagged) {
                     soundPool!!.play(soundRemoveFlag, 0.44f, 0.44f, 1, 0, 1f)
-                    bombsTV!!.text =
-                        customFormat((bombsTV!!.text.toString().toInt() - 1).toLong())
+                    bombsTV!!.text = customFormat((bombsTV!!.text.toString().toInt() - 1).toLong())
                 } else {
                     soundPool!!.play(soundFlag, 0.44f, 0.44f, 1, 0, 1f)
-                    bombsTV!!.text =
-                        customFormat((bombsTV!!.text.toString().toInt() + 1).toLong())
+                    bombsTV!!.text = customFormat((bombsTV!!.text.toString().toInt() + 1).toLong())
                 }
             }
         }
@@ -242,8 +241,7 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
                 cell2.isRevealed = true
                 winCondition--
                 if (cell2.isFlagged) {
-                    bombsTV!!.text =
-                        customFormat((bombsTV!!.text.toString().toInt() + 1).toLong())
+                    bombsTV!!.text = customFormat((bombsTV!!.text.toString().toInt() + 1).toLong())
                 }
             }
         }
