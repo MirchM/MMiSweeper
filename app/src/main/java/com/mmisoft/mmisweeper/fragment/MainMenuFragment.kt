@@ -1,4 +1,4 @@
-package com.mmisoft.mmisweeper.Fragment
+package com.mmisoft.mmisweeper.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater

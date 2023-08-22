@@ -1,4 +1,4 @@
-package com.mmisoft.mmisweeper.Fragment
+package com.mmisoft.mmisweeper.fragment
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -18,14 +18,13 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.mmisoft.mmisweeper.Game.Cell
-import com.mmisoft.mmisweeper.Game.MyRecyclerViewAdapter
-import com.mmisoft.mmisweeper.Game.MyRecyclerViewAdapter.ItemClickListener
 import com.mmisoft.mmisweeper.R
+import com.mmisoft.mmisweeper.game.Cell
+import com.mmisoft.mmisweeper.game.MyRecyclerViewAdapter
 import java.text.DecimalFormat
 import java.util.Random
 
-class GameFragment : Fragment(), ItemClickListener {
+class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         numberOfBombs = requireArguments().getInt("bombs")
@@ -137,14 +136,15 @@ class GameFragment : Fragment(), ItemClickListener {
         // set up the RecyclerView
         val recyclerView = v.findViewById<RecyclerView>(R.id.rvNumbers)
         recyclerView.layoutManager = GridLayoutManager(context, numOfCollumns)
-        adapter = cells?.let { cells ->
+        adapter = cells?.let {
             MyRecyclerViewAdapter(
                 requireContext(),
-                cells,
+                it,
                 numOfCollumns,
                 resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
             )
         }
+
         adapter!!.setClickListener(this)
         recyclerView.adapter = adapter
 
@@ -178,12 +178,10 @@ class GameFragment : Fragment(), ItemClickListener {
                 adapter!!.notifyItemChanged(position)
                 if (cells!![position].isFlagged) {
                     soundPool!!.play(soundRemoveFlag, 0.44f, 0.44f, 1, 0, 1f)
-                    bombsTV!!.text =
-                        customFormat((bombsTV!!.text.toString().toInt() - 1).toLong())
+                    bombsTV!!.text = customFormat((bombsTV!!.text.toString().toInt() - 1).toLong())
                 } else {
                     soundPool!!.play(soundFlag, 0.44f, 0.44f, 1, 0, 1f)
-                    bombsTV!!.text =
-                        customFormat((bombsTV!!.text.toString().toInt() + 1).toLong())
+                    bombsTV!!.text = customFormat((bombsTV!!.text.toString().toInt() + 1).toLong())
                 }
             }
         }
@@ -243,8 +241,7 @@ class GameFragment : Fragment(), ItemClickListener {
                 cell2.isRevealed = true
                 winCondition--
                 if (cell2.isFlagged) {
-                    bombsTV!!.text =
-                        customFormat((bombsTV!!.text.toString().toInt() + 1).toLong())
+                    bombsTV!!.text = customFormat((bombsTV!!.text.toString().toInt() + 1).toLong())
                 }
             }
         }
