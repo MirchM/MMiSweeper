@@ -1,4 +1,4 @@
-package com.mmisoft.mmisweeper.Fragment
+package com.mmisoft.mmisweeper.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import androidx.fragment.app.Fragment
-import com.mmisoft.mmisweeper.Fragment.GameFragment.Companion.newInstance
+import com.mmisoft.mmisweeper.fragment.GameFragment.Companion.newInstance
 import com.mmisoft.mmisweeper.MainActivity
 import com.mmisoft.mmisweeper.R
 
