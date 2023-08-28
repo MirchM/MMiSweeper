@@ -3,9 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragment.OptionsFragment">
+    tools:context=".fragment.OptionsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <androidx.constraintlayout.widget.ConstraintLayout
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
@@ -48,6 +47,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/topBar"
@@ -64,6 +64,18 @@
                 android:textSize="@dimen/_19ssp"
                 android:fontFamily="@font/pressstartp2p_regular"
                 android:textAlignment="center"/>
+
+            <Button
+                android:id="@+id/soundBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/_13sdp"
+                android:paddingHorizontal="@dimen/_7sdp"
+                android:text="Sound"
+                android:textSize="@dimen/_19ssp"
+                android:fontFamily="@font/pressstartp2p_regular"
+                android:textAlignment="center"/>
+
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
