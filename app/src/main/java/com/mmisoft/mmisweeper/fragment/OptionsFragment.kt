@@ -19,16 +19,6 @@ import com.mmisoft.mmisweeper.R
  * create an instance of this fragment.
  */
 class OptionsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var mParam1: String? = null
-    private var mParam2: String? = null
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (arguments != null) {
-            mParam1 = requireArguments().getString(ARG_PARAM1)
-            mParam2 = requireArguments().getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -51,8 +41,8 @@ class OptionsFragment : Fragment() {
             val builder = AlertDialog.Builder(context)
             builder.setTitle("Pick A Theme")
             builder.setCancelable(false)
-            builder.setSingleChoiceItems(options, checkedItem) { dialogInterface, i -> myEdit.putString("theme", options[i]) }
-            builder.setPositiveButton("OK") { dialogInterface, i ->
+            builder.setSingleChoiceItems(options, checkedItem) { _, i -> myEdit.putString("theme", options[i]) }
+            builder.setPositiveButton("OK") { _, _ ->
                 myEdit.apply()
                 Toast.makeText(context, sharedPreferences.getString("theme", "default") + " theme is selected", Toast.LENGTH_SHORT).show()
             }
