@@ -28,12 +28,12 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         numberOfBombs = requireArguments().getInt("bombs")
-        numOfCollumns = requireArguments().getInt("columns")
+        numOfColumns = requireArguments().getInt("columns")
         numOfRows = requireArguments().getInt("rows")
     }
 
-    var adapter: MyRecyclerViewAdapter? = null
-    var numOfCollumns = 0
+    private var adapter: MyRecyclerViewAdapter? = null
+    private var numOfColumns = 0
     private var cells: ArrayList<Cell>? = null
     private var numberOfBombs = 0
     private var numOfRows = 0
@@ -135,12 +135,12 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
 
         // set up the RecyclerView
         val recyclerView = v.findViewById<RecyclerView>(R.id.rvNumbers)
-        recyclerView.layoutManager = GridLayoutManager(context, numOfCollumns)
+        recyclerView.layoutManager = GridLayoutManager(context, numOfColumns)
         adapter = cells?.let {
             MyRecyclerViewAdapter(
                 requireContext(),
                 it,
-                numOfCollumns,
+                numOfColumns,
                 resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
             )
         }
@@ -156,7 +156,7 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
         if (saved) {
             saved = false
         }
-        winCondition = numOfCollumns * numOfRows - numberOfBombs
+        winCondition = numOfColumns * numOfRows - numberOfBombs
         if (cells!!.size > 0) {
             cells!!.clear()
             firstClick = true
@@ -164,7 +164,7 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
             timeTV!!.text = customFormat(0)
             bombsTV!!.text = customFormat(numberOfBombs.toLong())
         }
-        for (i in 0 until numOfRows * numOfCollumns) {
+        for (i in 0 until numOfRows * numOfColumns) {
             val cell = Cell(i)
             cell.value = 0
             cells!!.add(cell)
@@ -191,12 +191,12 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
         val bombs: MutableList<Cell> = ArrayList()
         var bombsPlaced = 0
         while (bombsPlaced < numberOfBombs) {
-            val x = Random().nextInt(numOfCollumns)
-            val y = Random().nextInt(numOfCollumns)
-            if (cells!![x + y * numOfCollumns].value == Cell.BLANK && cells!![x + y * numOfCollumns].id != cell.id) {
-                cells!![x + y * numOfCollumns].value = Cell.BOMB
+            val x = Random().nextInt(numOfColumns)
+            val y = Random().nextInt(numOfColumns)
+            if (cells!![x + y * numOfColumns].value == Cell.BLANK && cells!![x + y * numOfColumns].id != cell.id) {
+                cells!![x + y * numOfColumns].value = Cell.BOMB
                 bombsPlaced++
-                bombs.add(cells!![x + y * numOfCollumns])
+                bombs.add(cells!![x + y * numOfColumns])
             }
         }
         for (cell2 in bombs) {
@@ -217,21 +217,21 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
     private fun getNeighbours(cell: Cell): List<Cell> {
         val neighbours: MutableList<Cell> = ArrayList()
         //getting the cell's y coordinate
-        val y = cell.id / numOfCollumns
+        val y = cell.id / numOfColumns
         //getting the cell's x coordinate
-        val x = cell.id % numOfCollumns
+        val x = cell.id % numOfColumns
         if (x != 0) {
-            if (checkOutOfBounds(x - 1 + (y - 1) * numOfCollumns)) neighbours.add(cells!![x - 1 + (y - 1) * numOfCollumns])
-            if (checkOutOfBounds(x - 1 + y * numOfCollumns)) neighbours.add(cells!![x - 1 + y * numOfCollumns])
-            if (checkOutOfBounds(x - 1 + (y + 1) * numOfCollumns)) neighbours.add(cells!![x - 1 + (y + 1) * numOfCollumns])
+            if (checkOutOfBounds(x - 1 + (y - 1) * numOfColumns)) neighbours.add(cells!![x - 1 + (y - 1) * numOfColumns])
+            if (checkOutOfBounds(x - 1 + y * numOfColumns)) neighbours.add(cells!![x - 1 + y * numOfColumns])
+            if (checkOutOfBounds(x - 1 + (y + 1) * numOfColumns)) neighbours.add(cells!![x - 1 + (y + 1) * numOfColumns])
         }
-        if (x != numOfCollumns - 1) {
-            if (checkOutOfBounds(x + 1 + (y - 1) * numOfCollumns)) neighbours.add(cells!![x + 1 + (y - 1) * numOfCollumns])
-            if (checkOutOfBounds(x + 1 + y * numOfCollumns)) neighbours.add(cells!![x + 1 + y * numOfCollumns])
-            if (checkOutOfBounds(x + 1 + (y + 1) * numOfCollumns)) neighbours.add(cells!![x + 1 + (y + 1) * numOfCollumns])
+        if (x != numOfColumns - 1) {
+            if (checkOutOfBounds(x + 1 + (y - 1) * numOfColumns)) neighbours.add(cells!![x + 1 + (y - 1) * numOfColumns])
+            if (checkOutOfBounds(x + 1 + y * numOfColumns)) neighbours.add(cells!![x + 1 + y * numOfColumns])
+            if (checkOutOfBounds(x + 1 + (y + 1) * numOfColumns)) neighbours.add(cells!![x + 1 + (y + 1) * numOfColumns])
         }
-        if (checkOutOfBounds(x + (y - 1) * numOfCollumns)) neighbours.add(cells!![x + (y - 1) * numOfCollumns])
-        if (checkOutOfBounds(x + (y + 1) * numOfCollumns)) neighbours.add(cells!![x + (y + 1) * numOfCollumns])
+        if (checkOutOfBounds(x + (y - 1) * numOfColumns)) neighbours.add(cells!![x + (y - 1) * numOfColumns])
+        if (checkOutOfBounds(x + (y + 1) * numOfColumns)) neighbours.add(cells!![x + (y + 1) * numOfColumns])
         return neighbours
     }
 
@@ -260,7 +260,7 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
     }
 
     private fun checkOutOfBounds(pos: Int): Boolean {
-        return pos < numOfCollumns * numOfRows && pos >= 0
+        return pos < numOfColumns * numOfRows && pos >= 0
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -319,9 +319,8 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
     private fun startTimer(currentMillis: Int) {
         cTimer = object : CountDownTimer(10000000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                var millisUntilFinished = millisUntilFinished
-                millisUntilFinished -= currentMillis * 1000L
-                timeTV?.text = customFormat((10000000 - millisUntilFinished) / 1000)
+                timeTV?.text =
+                    customFormat((10000000 - (millisUntilFinished - currentMillis * 1000L)) / 1000)
             }
 
             override fun onFinish() {}
