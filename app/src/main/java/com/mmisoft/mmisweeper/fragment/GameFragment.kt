@@ -16,11 +16,13 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mmisoft.mmisweeper.R
 import com.mmisoft.mmisweeper.game.Cell
 import com.mmisoft.mmisweeper.game.MyRecyclerViewAdapter
+import com.mmisoft.mmisweeper.model.GameViewModel
 import java.text.DecimalFormat
 import java.util.Random
 
@@ -32,6 +34,7 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
         numOfRows = requireArguments().getInt("rows")
     }
 
+    private val viewModel : GameViewModel by viewModels()
     private var adapter: MyRecyclerViewAdapter? = null
     private var numOfColumns = 0
     private var cells: ArrayList<Cell>? = null
