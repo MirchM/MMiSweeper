@@ -29,17 +29,16 @@ import java.util.Random
 class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        numberOfBombs = requireArguments().getInt("bombs")
-        numOfColumns = requireArguments().getInt("columns")
-        numOfRows = requireArguments().getInt("rows")
+        viewModel.initialiseGameBoard(requireArguments().getInt("bombs"), requireArguments().getInt("columns"), requireArguments().getInt("rows"))
     }
 
     private val viewModel : GameViewModel by viewModels()
+
+
     private var adapter: MyRecyclerViewAdapter? = null
-    private var numOfColumns = 0
+
     private var cells: ArrayList<Cell>? = null
-    private var numberOfBombs = 0
-    private var numOfRows = 0
+
     private var winCondition = 0
 
     //Booleans
@@ -131,19 +130,19 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
             cells?.clear()
             cells?.addAll((savedInstanceState.getSerializable("cells") as ArrayList<Cell>?)!!)
         } else {
-            bombsTV?.text = (customFormat(numberOfBombs.toLong()))
+            bombsTV?.text = (customFormat(viewModel.numberOfBombs.toLong()))
             saved = false
             resetBoard()
         }
 
         // set up the RecyclerView
         val recyclerView = v.findViewById<RecyclerView>(R.id.rvNumbers)
-        recyclerView.layoutManager = GridLayoutManager(context, numOfColumns)
+        recyclerView.layoutManager = GridLayoutManager(context, viewModel.numOfColumns)
         adapter = cells?.let {
             MyRecyclerViewAdapter(
                 requireContext(),
                 it,
-                numOfColumns,
+                viewModel.numOfColumns,
                 resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
             )
         }
@@ -159,15 +158,15 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
         if (saved) {
             saved = false
         }
-        winCondition = numOfColumns * numOfRows - numberOfBombs
+        winCondition = viewModel.numOfColumns * viewModel.numOfRows - viewModel.numberOfBombs
         if (cells!!.size > 0) {
             cells!!.clear()
             firstClick = true
             cancelTimer()
             timeTV!!.text = customFormat(0)
-            bombsTV!!.text = customFormat(numberOfBombs.toLong())
+            bombsTV!!.text = customFormat(viewModel.numberOfBombs.toLong())
         }
-        for (i in 0 until numOfRows * numOfColumns) {
+        for (i in 0 until viewModel.numOfRows * viewModel.numOfColumns) {
             val cell = Cell(i)
             cell.value = 0
             cells!!.add(cell)
@@ -193,13 +192,13 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
     private fun placeBombs(cell: Cell) {
         val bombs: MutableList<Cell> = ArrayList()
         var bombsPlaced = 0
-        while (bombsPlaced < numberOfBombs) {
-            val x = Random().nextInt(numOfColumns)
-            val y = Random().nextInt(numOfColumns)
-            if (cells!![x + y * numOfColumns].value == Cell.BLANK && cells!![x + y * numOfColumns].id != cell.id) {
-                cells!![x + y * numOfColumns].value = Cell.BOMB
+        while (bombsPlaced < viewModel.numberOfBombs) {
+            val x = Random().nextInt(viewModel.numOfColumns)
+            val y = Random().nextInt(viewModel.numOfColumns)
+            if (cells!![x + y * viewModel.numOfColumns].value == Cell.BLANK && cells!![x + y * viewModel.numOfColumns].id != cell.id) {
+                cells!![x + y * viewModel.numOfColumns].value = Cell.BOMB
                 bombsPlaced++
-                bombs.add(cells!![x + y * numOfColumns])
+                bombs.add(cells!![x + y * viewModel.numOfColumns])
             }
         }
         for (cell2 in bombs) {
@@ -220,21 +219,21 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
     private fun getNeighbours(cell: Cell): List<Cell> {
         val neighbours: MutableList<Cell> = ArrayList()
         //getting the cell's y coordinate
-        val y = cell.id / numOfColumns
+        val y = cell.id / viewModel.numOfColumns
         //getting the cell's x coordinate
-        val x = cell.id % numOfColumns
+        val x = cell.id % viewModel.numOfColumns
         if (x != 0) {
-            if (checkOutOfBounds(x - 1 + (y - 1) * numOfColumns)) neighbours.add(cells!![x - 1 + (y - 1) * numOfColumns])
-            if (checkOutOfBounds(x - 1 + y * numOfColumns)) neighbours.add(cells!![x - 1 + y * numOfColumns])
-            if (checkOutOfBounds(x - 1 + (y + 1) * numOfColumns)) neighbours.add(cells!![x - 1 + (y + 1) * numOfColumns])
+            if (checkOutOfBounds(x - 1 + (y - 1) * viewModel.numOfColumns)) neighbours.add(cells!![x - 1 + (y - 1) * viewModel.numOfColumns])
+            if (checkOutOfBounds(x - 1 + y * viewModel.numOfColumns)) neighbours.add(cells!![x - 1 + y * viewModel.numOfColumns])
+            if (checkOutOfBounds(x - 1 + (y + 1) * viewModel.numOfColumns)) neighbours.add(cells!![x - 1 + (y + 1) * viewModel.numOfColumns])
         }
-        if (x != numOfColumns - 1) {
-            if (checkOutOfBounds(x + 1 + (y - 1) * numOfColumns)) neighbours.add(cells!![x + 1 + (y - 1) * numOfColumns])
-            if (checkOutOfBounds(x + 1 + y * numOfColumns)) neighbours.add(cells!![x + 1 + y * numOfColumns])
-            if (checkOutOfBounds(x + 1 + (y + 1) * numOfColumns)) neighbours.add(cells!![x + 1 + (y + 1) * numOfColumns])
+        if (x != viewModel.numOfColumns - 1) {
+            if (checkOutOfBounds(x + 1 + (y - 1) * viewModel.numOfColumns)) neighbours.add(cells!![x + 1 + (y - 1) * viewModel.numOfColumns])
+            if (checkOutOfBounds(x + 1 + y * viewModel.numOfColumns)) neighbours.add(cells!![x + 1 + y * viewModel.numOfColumns])
+            if (checkOutOfBounds(x + 1 + (y + 1) * viewModel.numOfColumns)) neighbours.add(cells!![x + 1 + (y + 1) * viewModel.numOfColumns])
         }
-        if (checkOutOfBounds(x + (y - 1) * numOfColumns)) neighbours.add(cells!![x + (y - 1) * numOfColumns])
-        if (checkOutOfBounds(x + (y + 1) * numOfColumns)) neighbours.add(cells!![x + (y + 1) * numOfColumns])
+        if (checkOutOfBounds(x + (y - 1) * viewModel.numOfColumns)) neighbours.add(cells!![x + (y - 1) * viewModel.numOfColumns])
+        if (checkOutOfBounds(x + (y + 1) * viewModel.numOfColumns)) neighbours.add(cells!![x + (y + 1) * viewModel.numOfColumns])
         return neighbours
     }
 
@@ -263,7 +262,7 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
     }
 
     private fun checkOutOfBounds(pos: Int): Boolean {
-        return pos < numOfColumns * numOfRows && pos >= 0
+        return pos < viewModel.numOfColumns * viewModel.numOfRows && pos >= 0
     }
 
     @SuppressLint("NotifyDataSetChanged")
