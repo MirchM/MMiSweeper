@@ -29,18 +29,34 @@ class GameViewModel : ViewModel() {
     val winCondition: Int
         get() = _winCondition
 
+    fun setWinCondition(newWinCondition: Int){
+        _winCondition = newWinCondition
+    }
+
     // Booleans
     private var _gameOver = false
     val gameOver: Boolean
         get() = _gameOver
 
+    fun setGameOver(newGameOver: Boolean){
+        _gameOver = newGameOver
+    }
+
     private var _firstClick = true
     val firstClick: Boolean
         get() = _firstClick
 
+    fun setFirstCick(newFirstClick: Boolean){
+        _firstClick = newFirstClick
+    }
+
     private var _toggleFlag = false
     val toggleFlag: Boolean
         get() = _toggleFlag
+
+    fun setToggleFlag(newToggleFlag: Boolean){
+        _toggleFlag = newToggleFlag
+    }
 
     private lateinit var _cTimer: CountDownTimer
     val cTimer: CountDownTimer
@@ -67,5 +83,21 @@ class GameViewModel : ViewModel() {
     private var _soundDeath = 0
     val soundDeath: Int
         get() = _soundDeath
+
+    private var _winDialog = false
+    val winDialog: Boolean
+        get() = _winDialog
+
+    private var _loseDialog = false
+    val loseDialog: Boolean
+        get() = _loseDialog
+
+    fun setWinDialog(newWinDialog: Boolean){
+        _winDialog = newWinDialog
+    }
+
+    fun setLoseDialog(newLoseDialog: Boolean){
+        _loseDialog = newLoseDialog
+    }
 
 }
