@@ -39,19 +39,12 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
 
     private var cells: ArrayList<Cell>? = null
 
-    private var winCondition = 0
-
     //Booleans
-    private var gameOver = false
-    private var firstClick = true
-    private var toggleFlag = false
     private var cTimer: CountDownTimer? = null
     private var timeTV: TextView? = null
     private var bombsTV: TextView? = null
 
     //dialogBooleans for screen orientation changes
-    private var loseDialog = false
-    private var winDialog = false
 
     //MediaPlayer for button sound
     private var soundPool: SoundPool? = null
@@ -98,13 +91,13 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
         val resetButton = v.findViewById<ImageButton>(R.id.resetBtn)
         resetButton.setOnClickListener {
             resetBoard()
-            gameOver = false
+            viewModel.setGameOver(false)
             adapter!!.notifyDataSetChanged()
         }
         val flagToggleBtn = v.findViewById<ImageButton>(R.id.flagButton)
         flagToggleBtn.setOnClickListener {
-            toggleFlag = !toggleFlag
-            if (toggleFlag) {
+            viewModel.setToggleFlag(!viewModel.toggleFlag)
+            if (viewModel.toggleFlag) {
                 flagToggleBtn.setImageResource(R.drawable.flagged_selected)
             } else {
                 flagToggleBtn.setImageResource(R.drawable.flagged)
@@ -113,20 +106,20 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
         cells = ArrayList()
         if (savedInstanceState != null) {
             saved = true
-            gameOver = savedInstanceState.getBoolean("gameOver")
-            firstClick = savedInstanceState.getBoolean("firstClick")
-            toggleFlag = savedInstanceState.getBoolean("toggleFlag")
-            winCondition = savedInstanceState.getInt("winCondition")
-            loseDialog = savedInstanceState.getBoolean("loseDialog")
-            winDialog = savedInstanceState.getBoolean("winDialog")
+            //gameOver = savedInstanceState.getBoolean("gameOver")
+            //viewModel.firstClick = savedInstanceState.getBoolean("viewModel.firstClick")
+            //toggleFlag = savedInstanceState.getBoolean("toggleFlag")
+            //winCondition = savedInstanceState.getInt("winCondition")
+            //loseDialog = savedInstanceState.getBoolean("loseDialog")
+            //winDialog = savedInstanceState.getBoolean("winDialog")
             bombsTV?.text = customFormat(savedInstanceState.getInt("bombs").toLong())
-            if (!firstClick && !winDialog && !loseDialog) {
+            if (!viewModel.firstClick && !viewModel.winDialog && !viewModel.loseDialog) {
                 startTimer(savedInstanceState.getInt("currentTime"))
             } else {
                 timeTV?.text = (customFormat(savedInstanceState.getInt("currentTime").toLong()))
             }
-            if (winDialog) showWinDialog()
-            if (loseDialog) showLostDialog()
+            if (viewModel.winDialog) showWinDialog()
+            if (viewModel.loseDialog) showLostDialog()
             cells?.clear()
             cells?.addAll((savedInstanceState.getSerializable("cells") as ArrayList<Cell>?)!!)
         } else {
@@ -158,10 +151,10 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
         if (saved) {
             saved = false
         }
-        winCondition = viewModel.numOfColumns * viewModel.numOfRows - viewModel.numberOfBombs
+        viewModel.setWinCondition(viewModel.numOfColumns * viewModel.numOfRows - viewModel.numberOfBombs)
         if (cells!!.size > 0) {
             cells!!.clear()
-            firstClick = true
+            viewModel.setFirstCick(true)
             cancelTimer()
             timeTV!!.text = customFormat(0)
             bombsTV!!.text = customFormat(viewModel.numberOfBombs.toLong())
@@ -174,7 +167,7 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
     }
 
     private fun flagCell(position: Int) {
-        if (!firstClick) {
+        if (!viewModel.firstClick) {
             if (!cells!![position].isRevealed) {
                 cells!![position].toggleFlagged()
                 adapter!!.notifyItemChanged(position)
@@ -241,7 +234,7 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
         for (cell2 in getNeighbours(cell)) {
             if (cell2.value != Cell.BLANK && !cell2.isRevealed) {
                 cell2.isRevealed = true
-                winCondition--
+                viewModel.setWinCondition(viewModel.winCondition - 1)
                 if (cell2.isFlagged) {
                     bombsTV!!.text = customFormat((bombsTV!!.text.toString().toInt() + 1).toLong())
                 }
@@ -251,7 +244,7 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
         if (cell.isFlagged) {
             bombsTV!!.text = customFormat((bombsTV!!.text.toString().toInt() + 1).toLong())
         }
-        winCondition--
+        viewModel.setWinCondition(viewModel.winCondition - 1)
         val emptyCellList: MutableList<Cell> = ArrayList()
         for (cell1 in getNeighbours(cell)) {
             if (cell1.value == Cell.BLANK && !cell1.isRevealed) {
@@ -268,14 +261,14 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
     @SuppressLint("NotifyDataSetChanged")
     override fun onItemClick(position: Int) {
         val cell = cells!![position]
-        if (firstClick) {
+        if (viewModel.firstClick) {
             soundPool?.play(soundDefault, 0.44f, 0.44f, 1, 0, 1f)
             placeBombs(cell)
-            firstClick = false
+            viewModel.setFirstCick(false)
             startTimer(0)
         }
-        if (!gameOver) {
-            if (toggleFlag) {
+        if (!viewModel.gameOver) {
+            if (viewModel.toggleFlag) {
                 flagCell(position)
             } else if (!cell.isFlagged) {
                 when (cell.value) {
@@ -285,7 +278,7 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
                         cell.value = -2
                         showLostDialog()
                         revealAllBombs()
-                        gameOver = true
+                        viewModel.setGameOver(true)
                         cancelTimer()
                     }
 
@@ -299,16 +292,16 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
                     else -> {
                         soundPool?.play(soundDefault, 0.44f, 0.44f, 1, 0, 1f)
                         if (!cell.isRevealed) {
-                            winCondition--
+                            viewModel.setWinCondition(viewModel.winCondition - 1)
                         }
                         cells?.let { it[it.indexOf(cell)].isRevealed = true }
                     }
                 }
             }
             adapter?.notifyDataSetChanged()
-            if (winCondition == 0) {
+            if (viewModel.winCondition == 0) {
                 showWinDialog()
-                gameOver = true
+                viewModel.setGameOver(true)
                 cancelTimer()
             }
         }
@@ -341,7 +334,7 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun showWinDialog() {
-        winDialog = true
+        viewModel.setWinDialog(true)
         val dialog = Dialog(requireContext())
         dialog.window!!.setBackgroundDrawableResource(android.R.color.transparent)
         //disabling the default title
@@ -353,15 +346,15 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
         val dismissBtn = dialog.findViewById<Button>(R.id.dismissWinDialogButton)
         dismissBtn.setOnClickListener {
             dialog.dismiss()
-            winDialog = false
+            viewModel.setWinDialog(false)
         }
         val restartBtn = dialog.findViewById<Button>(R.id.resetWinDialogButton)
         restartBtn.setOnClickListener {
             dialog.dismiss()
             resetBoard()
-            gameOver = false
+            viewModel.setGameOver(false)
             adapter!!.notifyDataSetChanged()
-            winDialog = false
+            viewModel.setWinDialog(false)
         }
         //TEXT VIEW
         val timeView = dialog.findViewById<TextView>(R.id.winTimeTV)
@@ -371,7 +364,7 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun showLostDialog() {
-        loseDialog = true
+        viewModel.setLoseDialog(true)
         val dialog = Dialog(requireContext())
         dialog.window!!.setBackgroundDrawableResource(android.R.color.transparent)
         //disabling the default title
@@ -383,14 +376,14 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
         val dismissBtn = dialog.findViewById<Button>(R.id.dismissLoseDialogButton)
         dismissBtn.setOnClickListener {
             dialog.dismiss()
-            loseDialog = false
+            viewModel.setLoseDialog(false)
         }
         val restartBtn = dialog.findViewById<Button>(R.id.resetLoseDialogButton)
         restartBtn.setOnClickListener {
             dialog.dismiss()
             resetBoard()
-            gameOver = false
-            loseDialog = false
+            viewModel.setGameOver(false)
+            viewModel.setLoseDialog(false)
             adapter!!.notifyDataSetChanged()
         }
         //TEXT VIEW
@@ -404,14 +397,13 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putSerializable("cells", cells)
-        outState.putBoolean("gameOver", gameOver)
-        outState.putBoolean("firstClick", firstClick)
-        outState.putBoolean("toggleFlag", toggleFlag)
-        outState.putInt("winCondition", winCondition)
+        //outState.putBoolean("gameOver", gameOver)
+        //outState.putBoolean("viewModel.firstClick", viewModel.firstClick)
+        //outState.putBoolean("toggleFlag", toggleFlag)
         outState.putInt("bombs", bombsTV!!.text.toString().toInt())
         outState.putInt("currentTime", timeTV!!.text.toString().toInt())
-        outState.putBoolean("winDialog", winDialog)
-        outState.putBoolean("loseDialog", loseDialog)
+        //outState.putBoolean("winDialog", winDialog)
+        //outState.putBoolean("loseDialog", loseDialog)
     }
 
     companion object {
