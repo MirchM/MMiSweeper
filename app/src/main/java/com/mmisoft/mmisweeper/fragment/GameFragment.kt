@@ -29,18 +29,17 @@ import java.util.Random
 class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.initialiseGameBoard(requireArguments().getInt("bombs"), requireArguments().getInt("columns"), requireArguments().getInt("rows"))
+        viewModel.initialiseGameBoard(
+            requireArguments().getInt("bombs"),
+            requireArguments().getInt("columns"),
+            requireArguments().getInt("rows")
+        )
     }
 
-    private val viewModel : GameViewModel by viewModels()
-
-
+    private val viewModel: GameViewModel by viewModels()
     private var adapter: MyRecyclerViewAdapter? = null
 
-    private var cells: ArrayList<Cell>? = null
-
     //Booleans
-    private var cTimer: CountDownTimer? = null
     private var timeTV: TextView? = null
     private var bombsTV: TextView? = null
 
@@ -103,25 +102,17 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
                 flagToggleBtn.setImageResource(R.drawable.flagged)
             }
         }
-        cells = ArrayList()
+        viewModel.countValue.observe(viewLifecycleOwner) { newCountValue ->
+            timeTV?.text = customFormat(newCountValue)
+        }
+
+        println("COUNTDOWNTIMER: before")
         if (savedInstanceState != null) {
             saved = true
-            //gameOver = savedInstanceState.getBoolean("gameOver")
-            //viewModel.firstClick = savedInstanceState.getBoolean("viewModel.firstClick")
-            //toggleFlag = savedInstanceState.getBoolean("toggleFlag")
-            //winCondition = savedInstanceState.getInt("winCondition")
-            //loseDialog = savedInstanceState.getBoolean("loseDialog")
-            //winDialog = savedInstanceState.getBoolean("winDialog")
-            bombsTV?.text = customFormat(savedInstanceState.getInt("bombs").toLong())
-            if (!viewModel.firstClick && !viewModel.winDialog && !viewModel.loseDialog) {
-                startTimer(savedInstanceState.getInt("currentTime"))
-            } else {
-                timeTV?.text = (customFormat(savedInstanceState.getInt("currentTime").toLong()))
-            }
+            bombsTV?.text = (customFormat(viewModel.numberOfBombs.toLong()))
+            startTimer(0)
             if (viewModel.winDialog) showWinDialog()
             if (viewModel.loseDialog) showLostDialog()
-            cells?.clear()
-            cells?.addAll((savedInstanceState.getSerializable("cells") as ArrayList<Cell>?)!!)
         } else {
             bombsTV?.text = (customFormat(viewModel.numberOfBombs.toLong()))
             saved = false
@@ -131,14 +122,12 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
         // set up the RecyclerView
         val recyclerView = v.findViewById<RecyclerView>(R.id.rvNumbers)
         recyclerView.layoutManager = GridLayoutManager(context, viewModel.numOfColumns)
-        adapter = cells?.let {
-            MyRecyclerViewAdapter(
-                requireContext(),
-                it,
-                viewModel.numOfColumns,
-                resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-            )
-        }
+        adapter = MyRecyclerViewAdapter(
+            requireContext(),
+            viewModel.cells,
+            viewModel.numOfColumns,
+            resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        )
 
         adapter!!.setClickListener(this)
         recyclerView.adapter = adapter
@@ -152,8 +141,8 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
             saved = false
         }
         viewModel.setWinCondition(viewModel.numOfColumns * viewModel.numOfRows - viewModel.numberOfBombs)
-        if (cells!!.size > 0) {
-            cells!!.clear()
+        if (viewModel.cells.size > 0) {
+            viewModel.cells.clear()
             viewModel.setFirstCick(true)
             cancelTimer()
             timeTV!!.text = customFormat(0)
@@ -162,16 +151,16 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
         for (i in 0 until viewModel.numOfRows * viewModel.numOfColumns) {
             val cell = Cell(i)
             cell.value = 0
-            cells!!.add(cell)
+            viewModel.cells.add(cell)
         }
     }
 
     private fun flagCell(position: Int) {
         if (!viewModel.firstClick) {
-            if (!cells!![position].isRevealed) {
-                cells!![position].toggleFlagged()
+            if (!viewModel.cells[position].isRevealed) {
+                viewModel.cells[position].toggleFlagged()
                 adapter!!.notifyItemChanged(position)
-                if (cells!![position].isFlagged) {
+                if (viewModel.cells[position].isFlagged) {
                     soundPool!!.play(soundRemoveFlag, 0.44f, 0.44f, 1, 0, 1f)
                     bombsTV!!.text = customFormat((bombsTV!!.text.toString().toInt() - 1).toLong())
                 } else {
@@ -188,10 +177,10 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
         while (bombsPlaced < viewModel.numberOfBombs) {
             val x = Random().nextInt(viewModel.numOfColumns)
             val y = Random().nextInt(viewModel.numOfColumns)
-            if (cells!![x + y * viewModel.numOfColumns].value == Cell.BLANK && cells!![x + y * viewModel.numOfColumns].id != cell.id) {
-                cells!![x + y * viewModel.numOfColumns].value = Cell.BOMB
+            if (viewModel.cells[x + y * viewModel.numOfColumns].value == Cell.BLANK && viewModel.cells[x + y * viewModel.numOfColumns].id != cell.id) {
+                viewModel.cells[x + y * viewModel.numOfColumns].value = Cell.BOMB
                 bombsPlaced++
-                bombs.add(cells!![x + y * viewModel.numOfColumns])
+                bombs.add(viewModel.cells[x + y * viewModel.numOfColumns])
             }
         }
         for (cell2 in bombs) {
@@ -202,7 +191,7 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
     }
 
     private fun revealAllBombs() {
-        for (cell in cells!!) {
+        for (cell in viewModel.cells) {
             if (cell.value == Cell.BOMB) {
                 cell.isRevealed = true
             }
@@ -216,17 +205,17 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
         //getting the cell's x coordinate
         val x = cell.id % viewModel.numOfColumns
         if (x != 0) {
-            if (checkOutOfBounds(x - 1 + (y - 1) * viewModel.numOfColumns)) neighbours.add(cells!![x - 1 + (y - 1) * viewModel.numOfColumns])
-            if (checkOutOfBounds(x - 1 + y * viewModel.numOfColumns)) neighbours.add(cells!![x - 1 + y * viewModel.numOfColumns])
-            if (checkOutOfBounds(x - 1 + (y + 1) * viewModel.numOfColumns)) neighbours.add(cells!![x - 1 + (y + 1) * viewModel.numOfColumns])
+            if (checkOutOfBounds(x - 1 + (y - 1) * viewModel.numOfColumns)) neighbours.add(viewModel.cells!![x - 1 + (y - 1) * viewModel.numOfColumns])
+            if (checkOutOfBounds(x - 1 + y * viewModel.numOfColumns)) neighbours.add(viewModel.cells!![x - 1 + y * viewModel.numOfColumns])
+            if (checkOutOfBounds(x - 1 + (y + 1) * viewModel.numOfColumns)) neighbours.add(viewModel.cells!![x - 1 + (y + 1) * viewModel.numOfColumns])
         }
         if (x != viewModel.numOfColumns - 1) {
-            if (checkOutOfBounds(x + 1 + (y - 1) * viewModel.numOfColumns)) neighbours.add(cells!![x + 1 + (y - 1) * viewModel.numOfColumns])
-            if (checkOutOfBounds(x + 1 + y * viewModel.numOfColumns)) neighbours.add(cells!![x + 1 + y * viewModel.numOfColumns])
-            if (checkOutOfBounds(x + 1 + (y + 1) * viewModel.numOfColumns)) neighbours.add(cells!![x + 1 + (y + 1) * viewModel.numOfColumns])
+            if (checkOutOfBounds(x + 1 + (y - 1) * viewModel.numOfColumns)) neighbours.add(viewModel.cells!![x + 1 + (y - 1) * viewModel.numOfColumns])
+            if (checkOutOfBounds(x + 1 + y * viewModel.numOfColumns)) neighbours.add(viewModel.cells!![x + 1 + y * viewModel.numOfColumns])
+            if (checkOutOfBounds(x + 1 + (y + 1) * viewModel.numOfColumns)) neighbours.add(viewModel.cells!![x + 1 + (y + 1) * viewModel.numOfColumns])
         }
-        if (checkOutOfBounds(x + (y - 1) * viewModel.numOfColumns)) neighbours.add(cells!![x + (y - 1) * viewModel.numOfColumns])
-        if (checkOutOfBounds(x + (y + 1) * viewModel.numOfColumns)) neighbours.add(cells!![x + (y + 1) * viewModel.numOfColumns])
+        if (checkOutOfBounds(x + (y - 1) * viewModel.numOfColumns)) neighbours.add(viewModel.cells!![x + (y - 1) * viewModel.numOfColumns])
+        if (checkOutOfBounds(x + (y + 1) * viewModel.numOfColumns)) neighbours.add(viewModel.cells!![x + (y + 1) * viewModel.numOfColumns])
         return neighbours
     }
 
@@ -260,7 +249,7 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onItemClick(position: Int) {
-        val cell = cells!![position]
+        val cell = viewModel.cells[position]
         if (viewModel.firstClick) {
             soundPool?.play(soundDefault, 0.44f, 0.44f, 1, 0, 1f)
             placeBombs(cell)
@@ -274,7 +263,7 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
                 when (cell.value) {
                     Cell.BOMB -> {
                         soundPool?.play(soundDeath, 0.44f, 0.44f, 1, 0, 1f)
-                        cells?.let { it[it.indexOf(cell)].isRevealed = true }
+                        viewModel.cells?.let { it[it.indexOf(cell)].isRevealed = true }
                         cell.value = -2
                         showLostDialog()
                         revealAllBombs()
@@ -294,7 +283,7 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
                         if (!cell.isRevealed) {
                             viewModel.setWinCondition(viewModel.winCondition - 1)
                         }
-                        cells?.let { it[it.indexOf(cell)].isRevealed = true }
+                        viewModel.cells?.let { it[it.indexOf(cell)].isRevealed = true }
                     }
                 }
             }
@@ -312,19 +301,11 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
     }
 
     private fun startTimer(currentMillis: Int) {
-        cTimer = object : CountDownTimer(10000000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                timeTV?.text =
-                    customFormat((10000000 - (millisUntilFinished - currentMillis * 1000L)) / 1000)
-            }
-
-            override fun onFinish() {}
-        }
-        cTimer?.start()
+        viewModel.countValue.value?.toInt()?.let { viewModel.startCountdownTimer(it) }
     }
 
     private fun cancelTimer() {
-        cTimer?.cancel()
+        viewModel.cTimer?.cancel()
     }
 
     override fun onDestroy() {
@@ -358,7 +339,7 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
         }
         //TEXT VIEW
         val timeView = dialog.findViewById<TextView>(R.id.winTimeTV)
-        timeView.text = timeTV!!.text
+        timeView.text = timeTV?.text
         dialog.show()
     }
 
@@ -396,12 +377,12 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putSerializable("cells", cells)
+        //outState.putSerializable("viewModel.cells", viewModel.cells)
         //outState.putBoolean("gameOver", gameOver)
         //outState.putBoolean("viewModel.firstClick", viewModel.firstClick)
         //outState.putBoolean("toggleFlag", toggleFlag)
-        outState.putInt("bombs", bombsTV!!.text.toString().toInt())
-        outState.putInt("currentTime", timeTV!!.text.toString().toInt())
+        //outState.putInt("bombs", bombsTV!!.text.toString().toInt())
+        //outState.putInt("currentTime", timeTV!!.text.toString().toInt())
         //outState.putBoolean("winDialog", winDialog)
         //outState.putBoolean("loseDialog", loseDialog)
     }
