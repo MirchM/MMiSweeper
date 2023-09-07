@@ -2,7 +2,11 @@ package com.mmisoft.mmisweeper.model
 
 import android.media.SoundPool
 import android.os.CountDownTimer
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.mmisoft.mmisweeper.fragment.GameFragment
+import com.mmisoft.mmisweeper.game.Cell
 
 class GameViewModel : ViewModel() {
 
@@ -19,7 +23,7 @@ class GameViewModel : ViewModel() {
     val numOfRows: Int
         get() = _numOfRows
 
-    fun initialiseGameBoard(bombs: Int, columns: Int, rows: Int){
+    fun initialiseGameBoard(bombs: Int, columns: Int, rows: Int) {
         _numberOfBombs = bombs
         _numOfColumns = columns
         _numOfRows = rows
@@ -29,7 +33,7 @@ class GameViewModel : ViewModel() {
     val winCondition: Int
         get() = _winCondition
 
-    fun setWinCondition(newWinCondition: Int){
+    fun setWinCondition(newWinCondition: Int) {
         _winCondition = newWinCondition
     }
 
@@ -38,7 +42,7 @@ class GameViewModel : ViewModel() {
     val gameOver: Boolean
         get() = _gameOver
 
-    fun setGameOver(newGameOver: Boolean){
+    fun setGameOver(newGameOver: Boolean) {
         _gameOver = newGameOver
     }
 
@@ -46,7 +50,7 @@ class GameViewModel : ViewModel() {
     val firstClick: Boolean
         get() = _firstClick
 
-    fun setFirstCick(newFirstClick: Boolean){
+    fun setFirstCick(newFirstClick: Boolean) {
         _firstClick = newFirstClick
     }
 
@@ -54,13 +58,9 @@ class GameViewModel : ViewModel() {
     val toggleFlag: Boolean
         get() = _toggleFlag
 
-    fun setToggleFlag(newToggleFlag: Boolean){
+    fun setToggleFlag(newToggleFlag: Boolean) {
         _toggleFlag = newToggleFlag
     }
-
-    private lateinit var _cTimer: CountDownTimer
-    val cTimer: CountDownTimer
-        get() = _cTimer
 
     //MediaPlayer for button sound
     private lateinit var _soundPool: SoundPool
@@ -84,6 +84,8 @@ class GameViewModel : ViewModel() {
     val soundDeath: Int
         get() = _soundDeath
 
+    // Dialog
+
     private var _winDialog = false
     val winDialog: Boolean
         get() = _winDialog
@@ -92,12 +94,35 @@ class GameViewModel : ViewModel() {
     val loseDialog: Boolean
         get() = _loseDialog
 
-    fun setWinDialog(newWinDialog: Boolean){
+    fun setWinDialog(newWinDialog: Boolean) {
         _winDialog = newWinDialog
     }
 
-    fun setLoseDialog(newLoseDialog: Boolean){
+    fun setLoseDialog(newLoseDialog: Boolean) {
         _loseDialog = newLoseDialog
     }
 
+    // Cells
+    private var _cells: ArrayList<Cell> = arrayListOf()
+    val cells: ArrayList<Cell>
+        get() = _cells
+
+    // CountDownTimer
+    private var _cTimer: CountDownTimer? = null
+    val cTimer: CountDownTimer?
+        get() = _cTimer
+
+    fun startCountdownTimer(currentMillis: Int) {
+        _cTimer = object : CountDownTimer(10000000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                _countValue.value = (10000000 - (millisUntilFinished - currentMillis * 1000L)) / 1000
+            }
+            override fun onFinish() {}
+        }
+        _cTimer?.start()
+    }
+
+    private var _countValue : MutableLiveData<Long> = MutableLiveData(0L)
+    val countValue: LiveData<Long>
+        get() = _countValue
 }
