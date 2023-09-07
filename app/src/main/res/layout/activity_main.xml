@@ -9,7 +9,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView"
-        android:name="com.mmisoft.mmisweeper.Fragment.MainMenuFragment"
+        android:name="com.mmisoft.mmisweeper.fragment.MainMenuFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </RelativeLayout>
