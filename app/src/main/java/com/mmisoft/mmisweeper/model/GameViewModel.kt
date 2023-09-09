@@ -1,11 +1,12 @@
 package com.mmisoft.mmisweeper.model
 
+import android.media.AudioAttributes
 import android.media.SoundPool
 import android.os.CountDownTimer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.mmisoft.mmisweeper.fragment.GameFragment
+import com.mmisoft.mmisweeper.R
 import com.mmisoft.mmisweeper.game.Cell
 
 class GameViewModel : ViewModel() {
@@ -67,18 +68,44 @@ class GameViewModel : ViewModel() {
     val soundPool: SoundPool
         get() = _soundPool
 
+    fun initialiseSoundPool() {
+        val audioAttributes = AudioAttributes.Builder()
+            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+            .setUsage(AudioAttributes.USAGE_GAME)
+            .build()
+        _soundPool = SoundPool.Builder()
+            .setAudioAttributes(audioAttributes)
+            .build()
+    }
+
 
     private var _soundDefault = 0
     val soundDefault: Int
         get() = _soundDefault
 
+    fun setSoundDefault(sound: Int) {
+        _soundDefault = sound
+    }
+
+    fun setSoundFlag(sound: Int) {
+        _soundFlag = sound
+    }
+
     private var _soundFlag = 0
     val soundFlag: Int
         get() = _soundFlag
 
+    fun setSoundRemoveFlag(sound: Int) {
+        _soundRemoveFlag = sound
+    }
+
     private var _soundRemoveFlag = 0
     val soundRemoveFlag: Int
         get() = _soundRemoveFlag
+
+    fun setSoundDeath(sound: Int) {
+        _soundDeath = sound
+    }
 
     private var _soundDeath = 0
     val soundDeath: Int
@@ -115,14 +142,16 @@ class GameViewModel : ViewModel() {
     fun startCountdownTimer(currentMillis: Int) {
         _cTimer = object : CountDownTimer(10000000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                _countValue.value = (10000000 - (millisUntilFinished - currentMillis * 1000L)) / 1000
+                _countValue.value =
+                    (10000000 - (millisUntilFinished - currentMillis * 1000L)) / 1000
             }
+
             override fun onFinish() {}
         }
         _cTimer?.start()
     }
 
-    private var _countValue : MutableLiveData<Long> = MutableLiveData(0L)
+    private var _countValue: MutableLiveData<Long> = MutableLiveData(0L)
     val countValue: LiveData<Long>
         get() = _countValue
 }
