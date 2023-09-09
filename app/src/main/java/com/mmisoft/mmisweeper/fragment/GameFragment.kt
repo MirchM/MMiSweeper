@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.content.res.Configuration
-import android.media.AudioAttributes
-import android.media.SoundPool
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -44,13 +42,6 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
 
     //dialogBooleans for screen orientation changes
 
-    //MediaPlayer for button sound
-    private var soundPool: SoundPool? = null
-    private var soundDefault = 0
-    private var soundFlag = 0
-    private var soundRemoveFlag = 0
-    private var soundDeath = 0
-
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
@@ -61,28 +52,42 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
         val v = inflater.inflate(R.layout.fragment_game, container, false)
         bombsTV = v.findViewById(R.id.bombsTextView)
         timeTV = v.findViewById(R.id.timeTextView)
-        val audioAttributes = AudioAttributes.Builder()
+        /*val audioAttributes = AudioAttributes.Builder()
             .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
             .setUsage(AudioAttributes.USAGE_GAME)
             .build()
         soundPool = SoundPool.Builder()
             .setAudioAttributes(audioAttributes)
-            .build()
+            .build()*/
+        viewModel.initialiseSoundPool()
         val sh = requireContext().getSharedPreferences("Theme", Context.MODE_PRIVATE)
-        soundPool?.let { soundPool ->
+
+        viewModel.soundPool.let { soundPool ->
             when (sh.getString("theme", "default")) {
                 "minecraft wood", "minecraft iron", "minecraft gold", "minecraft diamond" -> {
-                    soundDefault = soundPool.load(context, R.raw.minecraft_default_sound, 1)
-                    soundFlag = soundPool.load(context, R.raw.minecraft_flag_sound, 1)
-                    soundRemoveFlag = soundPool.load(context, R.raw.minecraft_flag_remove_sound, 1)
-                    soundDeath = soundPool.load(context, R.raw.minecraft_death_sound, 1)
+                    viewModel.setSoundDefault(
+                        soundPool.load(
+                            context,
+                            R.raw.minecraft_default_sound,
+                            1
+                        )
+                    )
+                    viewModel.setSoundFlag(soundPool.load(context, R.raw.minecraft_flag_sound, 1))
+                    viewModel.setSoundRemoveFlag(
+                        soundPool.load(
+                            context,
+                            R.raw.minecraft_flag_remove_sound,
+                            1
+                        )
+                    )
+                    viewModel.setSoundDeath(soundPool.load(context, R.raw.minecraft_death_sound, 1))
                 }
 
                 "default" -> {
-                    soundDefault = soundPool.load(context, R.raw.default_sound, 1)
-                    soundFlag = soundPool.load(context, R.raw.default_sound, 1)
-                    soundRemoveFlag = soundPool.load(context, R.raw.default_sound, 1)
-                    soundDeath = soundPool.load(context, R.raw.default_sound, 1)
+                    viewModel.setSoundDefault(soundPool.load(context, R.raw.default_sound, 1))
+                    viewModel.setSoundFlag(soundPool.load(context, R.raw.default_sound, 1))
+                    viewModel.setSoundRemoveFlag(soundPool.load(context, R.raw.default_sound, 1))
+                    viewModel.setSoundDeath(soundPool.load(context, R.raw.default_sound, 1))
                 }
             }
         }
@@ -159,10 +164,10 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
                 viewModel.cells[position].toggleFlagged()
                 adapter!!.notifyItemChanged(position)
                 if (viewModel.cells[position].isFlagged) {
-                    soundPool!!.play(soundRemoveFlag, 0.44f, 0.44f, 1, 0, 1f)
+                    viewModel.soundPool.play(viewModel.soundRemoveFlag, 0.44f, 0.44f, 1, 0, 1f)
                     bombsTV!!.text = customFormat((bombsTV!!.text.toString().toInt() - 1).toLong())
                 } else {
-                    soundPool!!.play(soundFlag, 0.44f, 0.44f, 1, 0, 1f)
+                    viewModel.soundPool.play(viewModel.soundFlag, 0.44f, 0.44f, 1, 0, 1f)
                     bombsTV!!.text = customFormat((bombsTV!!.text.toString().toInt() + 1).toLong())
                 }
             }
@@ -249,7 +254,7 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
     override fun onItemClick(position: Int) {
         val cell = viewModel.cells[position]
         if (viewModel.firstClick) {
-            soundPool?.play(soundDefault, 0.44f, 0.44f, 1, 0, 1f)
+            viewModel.soundPool.play(viewModel.soundDefault, 0.44f, 0.44f, 1, 0, 1f)
             placeBombs(cell)
             viewModel.setFirstCick(false)
             startTimer()
@@ -260,7 +265,7 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
             } else if (!cell.isFlagged) {
                 when (cell.value) {
                     Cell.BOMB -> {
-                        soundPool?.play(soundDeath, 0.44f, 0.44f, 1, 0, 1f)
+                        viewModel.soundPool.play(viewModel.soundDeath, 0.44f, 0.44f, 1, 0, 1f)
                         viewModel.cells.let { it[it.indexOf(cell)].isRevealed = true }
                         cell.value = -2
                         showLostDialog()
@@ -270,14 +275,14 @@ class GameFragment : Fragment(), MyRecyclerViewAdapter.ItemClickListener {
                     }
 
                     Cell.BLANK -> {
-                        soundPool?.play(soundDefault, 0.44f, 0.44f, 1, 0, 1f)
+                        viewModel.soundPool.play(viewModel.soundDefault, 0.44f, 0.44f, 1, 0, 1f)
                         if (!cell.isRevealed) {
                             getEmptyNeighbourCells(cell)
                         }
                     }
 
                     else -> {
-                        soundPool?.play(soundDefault, 0.44f, 0.44f, 1, 0, 1f)
+                        viewModel.soundPool.play(viewModel.soundDefault, 0.44f, 0.44f, 1, 0, 1f)
                         if (!cell.isRevealed) {
                             viewModel.setWinCondition(viewModel.winCondition - 1)
                         }
